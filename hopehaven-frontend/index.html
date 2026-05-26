@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HopeHaven – Every Child Deserves a Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #faf6f0;
+      --warm: #f0e6d3;
+      --rust: #c8502a;
+      --rust-light: #e87a52;
+      --forest: #2d4a3e;
+      --forest-light: #3d6b5a;
+      --gold: #d4a843;
+      --dark: #1a1a18;
+      --text: #3a3530;
+      --muted: #8a7d6e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(250,246,240,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200,80,42,0.12);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--forest);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--rust); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--text);
+      font-size: 0.9rem; font-weight: 500; letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rust); }
+    .nav-cta {
+      background: var(--forest); color: white !important;
+      padding: 0.55rem 1.4rem; border-radius: 50px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--forest-light) !important; color: white !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 7rem 4rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -10%; right: -5%;
+      width: 55%; height: 120%;
+      background: var(--warm);
+      border-radius: 40% 0 0 40%;
+      z-index: 0;
+    }
+    .hero-text { position: relative; z-index: 1; }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(200,80,42,0.1); color: var(--rust);
+      font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem; border-radius: 50px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      line-height: 1.1; color: var(--dark);
+      margin-bottom: 1.4rem;
+    }
+    .hero h1 em { color: var(--rust); font-style: italic; }
+    .hero p {
+      font-size: 1.05rem; color: var(--muted);
+      line-height: 1.75; max-width: 480px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--rust); color: white;
+      padding: 0.85rem 2rem; border-radius: 50px;
+      font-weight: 500; font-size: 0.95rem;
+      text-decoration: none; transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: var(--rust-light); transform: translateY(-2px); }
+    .btn-outline {
+      border: 2px solid var(--forest); color: var(--forest);
+      padding: 0.85rem 2rem; border-radius: 50px;
+      font-weight: 500; font-size: 0.95rem;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-outline:hover { background: var(--forest); color: white; transform: translateY(-2px); }
+
+    .hero-visual { position: relative; z-index: 1; display: flex; justify-content: center; }
+    .hero-card-stack { position: relative; width: 320px; height: 420px; }
+    .child-card {
+      position: absolute;
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      width: 280px;
+    }
+    .child-card:nth-child(1) { top: 0; left: 40px; transform: rotate(-4deg); }
+    .child-card:nth-child(2) { top: 60px; left: 0; transform: rotate(2deg); z-index: 2; }
+    .child-card:nth-child(3) { top: 30px; left: 20px; transform: rotate(-1deg); z-index: 3; }
+    .card-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      margin-bottom: 0.8rem; object-fit: cover;
+      background: var(--warm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+    }
+    .child-card h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .child-card p { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem; }
+    .card-badge {
+      display: inline-block;
+      background: rgba(212,168,67,0.15); color: #9a7420;
+      font-size: 0.72rem; font-weight: 500;
+      padding: 0.25rem 0.7rem; border-radius: 50px;
+    }
+
+    /* STATS */
+    .stats {
+      background: var(--forest);
+      color: white;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      padding: 3rem 4rem; gap: 2rem;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem; font-weight: 700;
+      color: var(--gold);
+    }
+    .stat-label { font-size: 0.88rem; color: rgba(255,255,255,0.7); margin-top: 0.3rem; }
+
+    /* CHILDREN SECTION */
+    .section { padding: 5rem 4rem; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-tag {
+      display: inline-block;
+      color: var(--rust); font-size: 0.78rem;
+      font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 0.8rem;
+    }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      color: var(--dark);
+    }
+
+    .children-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .profile-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .profile-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+    .profile-img {
+      width: 100%; height: 200px;
+      background: linear-gradient(135deg, var(--warm), #e8d5b8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .profile-body { padding: 1.3rem; }
+    .profile-body h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 0.3rem; }
+    .profile-meta { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem; }
+    .profile-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .tag {
+      background: var(--warm); color: var(--text);
+      font-size: 0.72rem; padding: 0.2rem 0.6rem;
+      border-radius: 50px;
+    }
+    .btn-sm {
+      display: inline-block;
+      background: var(--forest); color: white;
+      padding: 0.5rem 1.2rem; border-radius: 50px;
+      font-size: 0.82rem; font-weight: 500;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .btn-sm:hover { background: var(--rust); }
+
+    /* DONATION */
+    .donation-section {
+      background: var(--warm);
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 4rem;
+      padding: 5rem 4rem;
+    }
+    .donation-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      margin-bottom: 1rem;
+    }
+    .donation-text p { color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem; }
+    .donation-amounts { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2rem; }
+    .amount-btn {
+      border: 2px solid var(--rust); color: var(--rust);
+      background: transparent;
+      padding: 0.6rem 1.4rem; border-radius: 50px;
+      font-size: 0.9rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .amount-btn:hover, .amount-btn.active {
+      background: var(--rust); color: white;
+    }
+    .donation-form { background: white; border-radius: 24px; padding: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+    .donation-form h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--muted); margin-bottom: 0.4rem; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 0.7rem 1rem;
+      border: 1.5px solid #e5ddd4; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      color: var(--text); background: white;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: var(--rust);
+    }
+    .btn-donate {
+      width: 100%; background: var(--rust); color: white;
+      border: none; padding: 0.9rem;
+      border-radius: 50px; font-size: 1rem; font-weight: 500;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s; margin-top: 0.5rem;
+    }
+    .btn-donate:hover { background: var(--rust-light); }
+
+    /* HOW IT WORKS */
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 2rem; }
+    .step { text-align: center; padding: 2rem; }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--rust); color: white;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.2rem;
+    }
+    .step h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 0.6rem; }
+    .step p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+    /* FOOTER */
+    footer {
+      background: var(--dark); color: rgba(255,255,255,0.7);
+      padding: 3rem 4rem 2rem;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+    }
+    .footer-brand .nav-logo { color: white; display: block; margin-bottom: 0.8rem; }
+    .footer-brand p { font-size: 0.85rem; line-height: 1.7; }
+    footer h4 { color: white; font-size: 0.9rem; margin-bottom: 1rem; }
+    footer ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    footer ul a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    footer ul a:hover { color: var(--gold); }
+    .footer-bottom {
+      background: var(--dark);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 1.2rem 4rem;
+      text-align: center;
+      font-size: 0.8rem; color: rgba(255,255,255,0.4);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-text { animation: fadeUp 0.8s ease both; }
+    .hero-visual { animation: fadeUp 0.8s 0.2s ease both; }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+      .hero::before { display: none; }
+      .hero-visual { display: none; }
+      .stats { grid-template-columns: 1fr; padding: 2rem 1.5rem; }
+      .section { padding: 3rem 1.5rem; }
+      .donation-section { grid-template-columns: 1fr; padding: 3rem 1.5rem; gap: 2rem; }
+      .steps { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr 1fr; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Hope<span>Haven</span></a>
+  <ul class="nav-links">
+    <li><a href="children.html">Children</a></li>
+    <li><a href="donate.html">Donate</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="login.html" class="nav-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-tag">✦ Making a difference, one family at a time</div>
+    <h1>Give a Child a<br><em>Forever Home</em></h1>
+    <p>HopeHaven connects loving families with children in need of adoption, and enables compassionate people to donate to their care and education.</p>
+    <div class="hero-btns">
+      <a href="children.html" class="btn-primary">Meet the Children</a>
+      <a href="donate.html" class="btn-outline">Make a Donation</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card-stack">
+      <div class="child-card">
+        <div class="card-avatar">🧒</div>
+        <h3>Arjun, 7</h3>
+        <p>Loves football & drawing</p>
+        <span class="card-badge">Available for Adoption</span>
+      </div>
+      <div class="child-card" style="top:80px;left:10px;">
+        <div class="card-avatar">👧</div>
+        <h3>Meera, 5</h3>
+        <p>Enjoys singing & stories</p>
+        <span class="card-badge">Available for Adoption</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">1,240+</div>
+    <div class="stat-label">Children supported</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">380+</div>
+    <div class="stat-label">Successful adoptions</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">₹52L+</div>
+    <div class="stat-label">Donations raised</div>
+  </div>
+</div>
+
+<!-- CHILDREN PREVIEW -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">✦ Children waiting</div>
+    <h2>Meet Some of Our Children</h2>
+  </div>
+  <div class="children-grid">
+    <div class="profile-card">
+      <div class="profile-img">🧒</div>
+      <div class="profile-body">
+        <h3>Arjun</h3>
+        <p class="profile-meta">Age 7 · Hyderabad</p>
+        <div class="profile-tags">
+          <span class="tag">Playful</span><span class="tag">Creative</span>
+        </div>
+        <a href="children.html" class="btn-sm">View Profile →</a>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-img">👧</div>
+      <div class="profile-body">
+        <h3>Meera</h3>
+        <p class="profile-meta">Age 5 · Pune</p>
+        <div class="profile-tags">
+          <span class="tag">Curious</span><span class="tag">Gentle</span>
+        </div>
+        <a href="children.html" class="btn-sm">View Profile →</a>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-img">👦</div>
+      <div class="profile-body">
+        <h3>Ravi</h3>
+        <p class="profile-meta">Age 10 · Chennai</p>
+        <div class="profile-tags">
+          <span class="tag">Sporty</span><span class="tag">Bright</span>
+        </div>
+        <a href="children.html" class="btn-sm">View Profile →</a>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-img">🧒</div>
+      <div class="profile-body">
+        <h3>Ananya</h3>
+        <p class="profile-meta">Age 8 · Mumbai</p>
+        <div class="profile-tags">
+          <span class="tag">Artistic</span><span class="tag">Kind</span>
+        </div>
+        <a href="children.html" class="btn-sm">View Profile →</a>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:2.5rem;">
+    <a href="children.html" class="btn-primary">See All Children</a>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how" style="background: var(--warm);">
+  <div class="section-header">
+    <div class="section-tag">✦ Simple process</div>
+    <h2>How HopeHaven Works</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Create an Account</h3>
+      <p>Register as a family or donor. Our team will verify your profile and guide you through next steps.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Browse & Connect</h3>
+      <p>Explore child profiles, read their stories, and submit an adoption request or choose to sponsor a child's education.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Change a Life</h3>
+      <p>Our counselors walk you through the adoption journey or ensure your donation reaches the right child's care fund.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DONATION PREVIEW -->
+<section class="donation-section">
+  <div class="donation-text">
+    <div class="section-tag">✦ Make an impact</div>
+    <h2>Your Donation Transforms Lives</h2>
+    <p>Every rupee you give goes directly towards food, shelter, education, and healthcare for children in our care. No child should grow up without hope.</p>
+    <div class="donation-amounts">
+      <button class="amount-btn">₹500</button>
+      <button class="amount-btn active">₹1,000</button>
+      <button class="amount-btn">₹2,500</button>
+      <button class="amount-btn">₹5,000</button>
+    </div>
+    <a href="donate.html" class="btn-primary">Donate Now</a>
+  </div>
+  <div class="donation-form">
+    <h3>Quick Donation</h3>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" placeholder="Your name" />
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" placeholder="you@example.com" />
+    </div>
+    <div class="form-group">
+      <label>Donation Amount (₹)</label>
+      <input type="number" placeholder="1000" />
+    </div>
+    <div class="form-group">
+      <label>Donate Towards</label>
+      <select>
+        <option>General Fund</option>
+        <option>Education</option>
+        <option>Healthcare</option>
+        <option>Food & Shelter</option>
+      </select>
+    </div>
+    <button class="btn-donate">Donate Now ❤️</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <a href="index.html" class="nav-logo">Hope<span style="color:var(--rust)">Haven</span></a>
+    <p>Connecting hearts and homes. Every child deserves love, safety, and a family to call their own.</p>
+  </div>
+  <div>
+    <h4>Platform</h4>
+    <ul>
+      <li><a href="children.html">Browse Children</a></li>
+      <li><a href="donate.html">Donate</a></li>
+      <li><a href="login.html">Register</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </div>
+  <div>
+    <h4>Admin</h4>
+    <ul>
+      <li><a href="admin.html">Dashboard</a></li>
+      <li><a href="#">Manage Children</a></li>
+      <li><a href="#">View Donations</a></li>
+      <li><a href="#">Reports</a></li>
+    </ul>
+  </div>
+  <div>
+    <h4>Contact</h4>
+    <ul>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">support@hopehaven.in</a></li>
+      <li><a href="#">+91 98765 43210</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">© 2025 HopeHaven. Built with ❤️ for every child's brighter tomorrow.</div>
+
+<script>
+  // Amount button toggle
+  document.querySelectorAll('.amount-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const amountInput = document.querySelector('.donation-form input[type="number"]');
+      if (amountInput) amountInput.value = btn.textContent.replace('₹','').replace(',','');
+    });
+  });
+</script>
+</body>
+</html>

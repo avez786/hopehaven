@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Donate – HopeHaven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #faf6f0; --warm: #f0e6d3; --rust: #c8502a; --rust-light: #e87a52;
+      --forest: #2d4a3e; --gold: #d4a843; --dark: #1a1a18; --text: #3a3530; --muted: #8a7d6e;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(250,246,240,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200,80,42,0.12);
+    }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--forest); text-decoration: none; }
+    .nav-logo span { color: var(--rust); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--text); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--rust); }
+    .nav-cta { background: var(--forest); color: white !important; padding: 0.55rem 1.4rem; border-radius: 50px; }
+    .page-hero { padding: 9rem 4rem 4rem; background: var(--forest); color: white; text-align: center; }
+    .section-tag { color: var(--gold); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 0.8rem; }
+    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.8rem; }
+    .page-hero p { color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto; line-height: 1.8; }
+    .tiers-section { padding: 4rem; background: white; }
+    .tiers-section h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; text-align: center; margin-bottom: 0.5rem; }
+    .tiers-section .sub { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 2.5rem; }
+    .tiers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; }
+    .tier-card { border: 2px solid #e5ddd4; border-radius: 20px; padding: 1.8rem 1.4rem; text-align: center; cursor: pointer; transition: all 0.25s; position: relative; }
+    .tier-card:hover, .tier-card.selected { border-color: var(--rust); background: rgba(200,80,42,0.04); }
+    .tier-badge { display: none; position: absolute; top: -10px; right: -10px; background: var(--rust); color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 0.75rem; align-items: center; justify-content: center; }
+    .tier-card.selected .tier-badge { display: flex; }
+    .tier-icon { font-size: 2.2rem; margin-bottom: 0.7rem; }
+    .tier-amount { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--rust); margin-bottom: 0.3rem; }
+    .tier-label { font-weight: 500; font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .tier-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .donate-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; padding: 4rem; align-items: start; }
+    .donate-form-wrap { background: white; border-radius: 24px; padding: 2.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+    .donate-form-wrap h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.8rem; }
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--muted); margin-bottom: 0.4rem; }
+    .form-group input, .form-group select { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #e5ddd4; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text); transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--rust); }
+    .amount-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.6rem; margin-bottom: 0.8rem; }
+    .preset-btn { border: 1.5px solid #e5ddd4; background: white; color: var(--text); padding: 0.6rem 0.4rem; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .preset-btn:hover, .preset-btn.active { border-color: var(--rust); background: var(--rust); color: white; }
+    .frequency-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
+    .freq-tab { flex: 1; padding: 0.6rem; border-radius: 10px; border: 1.5px solid #e5ddd4; background: white; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .freq-tab:hover, .freq-tab.active { border-color: var(--forest); background: var(--forest); color: white; }
+    .btn-donate { width: 100%; background: var(--rust); color: white; border: none; padding: 0.95rem; border-radius: 50px; font-size: 1rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; margin-top: 0.5rem; }
+    .btn-donate:hover { background: var(--rust-light); }
+    .secure-note { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 0.8rem; }
+    .impact-sidebar h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 1.2rem; }
+    .impact-item { display: flex; gap: 1rem; margin-bottom: 1.2rem; align-items: flex-start; }
+    .impact-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .impact-item h4 { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; }
+    .impact-item p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .trust-badges { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2rem; }
+    .trust-badge { background: var(--warm); border-radius: 12px; padding: 0.7rem 1rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.4rem; }
+    .success-overlay { display: none; position: fixed; inset: 0; background: rgba(26,26,24,0.7); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .success-overlay.open { display: flex; }
+    .success-modal { background: white; border-radius: 24px; padding: 3rem; text-align: center; max-width: 400px; width: 90%; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-modal h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 0.8rem; color: var(--forest); }
+    .success-modal p { color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+    .btn-close { background: var(--forest); color: white; border: none; padding: 0.7rem 2rem; border-radius: 50px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; }
+    footer { background: var(--dark); color: rgba(255,255,255,0.5); padding: 1.5rem 4rem; text-align: center; font-size: 0.82rem; }
+    footer a { color: var(--rust); text-decoration: none; }
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .page-hero { padding: 7rem 1.5rem 3rem; }
+      .tiers-section { padding: 2.5rem 1.5rem; }
+      .donate-layout { grid-template-columns: 1fr; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Hope<span>Haven</span></a>
+  <ul class="nav-links">
+    <li><a href="children.html">Children</a></li>
+    <li><a href="donate.html" class="active">Donate</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="login.html" class="nav-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <span class="section-tag">✦ Make a lasting impact</span>
+  <h1>Your Generosity Changes Lives</h1>
+  <p>Every donation directly supports food, education, healthcare, and shelter for children in our care.</p>
+</div>
+
+<section class="tiers-section">
+  <h2>Choose Your Impact Level</h2>
+  <p class="sub">Select a tier to see what your donation provides</p>
+  <div class="tiers-grid">
+    <div class="tier-card" onclick="selectTier(this, 500)"><div class="tier-badge">✓</div><div class="tier-icon">🍱</div><div class="tier-amount">₹500</div><div class="tier-label">Nourisher</div><div class="tier-desc">Nutritious meals for one child for a week</div></div>
+    <div class="tier-card selected" onclick="selectTier(this, 1000)"><div class="tier-badge">✓</div><div class="tier-icon">📚</div><div class="tier-amount">₹1,000</div><div class="tier-label">Educator</div><div class="tier-desc">School supplies and books for a month</div></div>
+    <div class="tier-card" onclick="selectTier(this, 2500)"><div class="tier-badge">✓</div><div class="tier-icon">🏥</div><div class="tier-amount">₹2,500</div><div class="tier-label">Healer</div><div class="tier-desc">Medical check-up and medicines for one child</div></div>
+    <div class="tier-card" onclick="selectTier(this, 5000)"><div class="tier-badge">✓</div><div class="tier-icon">🏠</div><div class="tier-amount">₹5,000</div><div class="tier-label">Guardian</div><div class="tier-desc">Full monthly care including all essentials</div></div>
+  </div>
+</section>
+
+<section class="donate-layout">
+  <div class="donate-form-wrap">
+    <h2>Complete Your Donation</h2>
+    <div class="frequency-tabs">
+      <button class="freq-tab active" onclick="setFreq(this, 'ONE_TIME')">One-Time</button>
+      <button class="freq-tab" onclick="setFreq(this, 'MONTHLY')">Monthly</button>
+      <button class="freq-tab" onclick="setFreq(this, 'ANNUALLY')">Annually</button>
+    </div>
+    <div class="form-group">
+      <label>Amount (₹)</label>
+      <div class="amount-grid">
+        <button class="preset-btn" onclick="setAmount(this, 500)">₹500</button>
+        <button class="preset-btn active" onclick="setAmount(this, 1000)">₹1,000</button>
+        <button class="preset-btn" onclick="setAmount(this, 2500)">₹2,500</button>
+        <button class="preset-btn" onclick="setAmount(this, 5000)">₹5,000</button>
+      </div>
+      <input type="number" id="amountInput" placeholder="Or enter custom amount" value="1000" />
+    </div>
+    <div class="form-group">
+      <label>Donate Towards</label>
+      <select id="categorySelect">
+        <option value="General Fund">General Fund</option>
+        <option value="Education">Education</option>
+        <option value="Healthcare">Healthcare</option>
+        <option value="Food & Nutrition">Food & Nutrition</option>
+        <option value="Shelter & Safety">Shelter & Safety</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Full Name</label><input type="text" id="donorName" placeholder="Your full name" /></div>
+    <div class="form-group"><label>Email</label><input type="email" id="donorEmail" placeholder="you@example.com" /></div>
+    <button class="btn-donate" onclick="submitDonation()">❤️ Donate ₹<span id="btnAmount">1,000</span></button>
+    <p class="secure-note">🔒 Secure payment · 80G tax exemption eligible</p>
+  </div>
+
+  <div class="impact-sidebar">
+    <h3>Where Your Money Goes</h3>
+    <div class="impact-item"><div class="impact-icon">📚</div><div><h4>40% — Education</h4><p>School fees, books, stationery, and digital learning tools.</p></div></div>
+    <div class="impact-item"><div class="impact-icon">🍱</div><div><h4>30% — Food & Nutrition</h4><p>Three nutritious meals daily for every child.</p></div></div>
+    <div class="impact-item"><div class="impact-icon">🏥</div><div><h4>20% — Healthcare</h4><p>Regular check-ups, medicines, and vaccinations.</p></div></div>
+    <div class="impact-item"><div class="impact-icon">🏠</div><div><h4>10% — Shelter & Safety</h4><p>Safe, warm, and clean living spaces for all children.</p></div></div>
+    <div class="trust-badges">
+      <div class="trust-badge">✅ 80G Certified</div>
+      <div class="trust-badge">🔒 Secure Payments</div>
+      <div class="trust-badge">📊 Transparent Reports</div>
+    </div>
+  </div>
+</section>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-modal">
+    <div class="success-icon">💚</div>
+    <h2>Thank You!</h2>
+    <p>Your donation has been received and saved. You're making a real difference in a child's life.</p>
+    <button class="btn-close" onclick="document.getElementById('successOverlay').classList.remove('open')">Back to Home</button>
+  </div>
+</div>
+
+<footer>© 2025 HopeHaven · <a href="index.html">Home</a> · <a href="children.html">Children</a></footer>
+
+<script>
+  const API = 'http://localhost:8080';
+  let selectedFrequency = 'ONE_TIME';
+
+  function selectTier(el, amount) {
+    document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('amountInput').value = amount;
+    document.getElementById('btnAmount').textContent = amount.toLocaleString('en-IN');
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      b.classList.toggle('active', parseInt(b.textContent.replace(/[₹,]/g,'')) === amount);
+    });
+  }
+
+  function setAmount(el, amount) {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('amountInput').value = amount;
+    document.getElementById('btnAmount').textContent = amount.toLocaleString('en-IN');
+  }
+
+  function setFreq(el, freq) {
+    document.querySelectorAll('.freq-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    selectedFrequency = freq;
+  }
+
+  document.getElementById('amountInput').addEventListener('input', function() {
+    const v = parseInt(this.value) || 0;
+    document.getElementById('btnAmount').textContent = v.toLocaleString('en-IN');
+  });
+
+  async function submitDonation() {
+    const donorName = document.getElementById('donorName').value;
+    const donorEmail = document.getElementById('donorEmail').value;
+    const amount = parseFloat(document.getElementById('amountInput').value);
+    const category = document.getElementById('categorySelect').value;
+
+    if (!donorName || !donorEmail || !amount) {
+      alert('Please fill in all fields!');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API}/api/donations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ donorName, donorEmail, amount, category, frequency: selectedFrequency })
+      });
+
+      if (response.ok) {
+        document.getElementById('successOverlay').classList.add('open');
+      } else {
+        alert('❌ Donation failed. Please try again.');
+      }
+    } catch (error) {
+      alert('❌ Cannot connect to server. Make sure Spring Boot is running!');
+    }
+  }
+</script>
+</body>
+</html>

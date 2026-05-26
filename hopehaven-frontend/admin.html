@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – HopeHaven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #faf6f0; --warm: #f0e6d3; --rust: #c8502a; --rust-light: #e87a52;
+      --forest: #2d4a3e; --forest-light: #3d6b5a; --gold: #d4a843;
+      --dark: #1a1a18; --text: #3a3530; --muted: #8a7d6e;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #f4f1ec; color: var(--text); display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px; flex-shrink: 0; background: var(--forest); color: white;
+      display: flex; flex-direction: column; padding: 2rem 1.2rem;
+      position: sticky; top: 0; height: 100vh;
+    }
+    .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 2.5rem; padding-left: 0.5rem; }
+    .sidebar-logo span { color: var(--gold); }
+    .sidebar-section { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 0.6rem; padding-left: 0.5rem; }
+    .sidebar-nav { list-style: none; margin-bottom: 2rem; }
+    .sidebar-nav li { margin-bottom: 0.3rem; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.7rem 0.8rem; border-radius: 10px;
+      color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; }
+    .sidebar-nav a.active { background: rgba(212,168,67,0.2); color: var(--gold); }
+    .sidebar-icon { font-size: 1rem; }
+    .sidebar-bottom { margin-top: auto; }
+    .admin-badge {
+      background: rgba(255,255,255,0.08); border-radius: 12px;
+      padding: 0.8rem; display: flex; align-items: center; gap: 0.7rem;
+    }
+    .admin-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .admin-name { font-size: 0.82rem; font-weight: 500; }
+    .admin-role { font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+
+    /* MAIN */
+    .main { flex: 1; overflow-y: auto; }
+    .topbar {
+      background: white; padding: 1.2rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 50;
+    }
+    .topbar h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--dark); }
+    .topbar-actions { display: flex; align-items: center; gap: 1rem; }
+    .btn-add {
+      background: var(--rust); color: white; border: none;
+      padding: 0.55rem 1.2rem; border-radius: 50px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-add:hover { background: var(--rust-light); }
+    .notification-bell { font-size: 1.2rem; cursor: pointer; position: relative; }
+    .notif-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--rust); border-radius: 50%; }
+
+    .content { padding: 2rem; }
+
+    /* KPI CARDS */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
+    .kpi-card {
+      background: white; border-radius: 16px; padding: 1.4rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
+    .kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .kpi-change { font-size: 0.72rem; font-weight: 500; }
+    .kpi-change.up { color: #2e7d32; }
+    .kpi-change.down { color: var(--rust); }
+    .kpi-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--dark); margin-bottom: 0.2rem; }
+    .kpi-label { font-size: 0.78rem; color: var(--muted); }
+
+    /* TABLES */
+    .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+    .card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--dark); }
+    .view-all { font-size: 0.78rem; color: var(--rust); text-decoration: none; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 0 0.5rem 0.7rem; text-align: left; border-bottom: 1px solid #f0e6d3; }
+    td { padding: 0.75rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #f9f6f2; }
+    tr:last-child td { border-bottom: none; }
+    .status-pill { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.7rem; border-radius: 50px; font-size: 0.72rem; font-weight: 500; }
+    .pill-pending { background: rgba(212,168,67,0.12); color: #9a7420; }
+    .pill-approved { background: rgba(45,74,62,0.1); color: var(--forest); }
+    .pill-rejected { background: rgba(200,80,42,0.1); color: var(--rust); }
+    .action-btn {
+      border: none; background: none; cursor: pointer; font-size: 0.78rem;
+      padding: 0.25rem 0.6rem; border-radius: 6px; font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+    .action-btn.approve { color: var(--forest); }
+    .action-btn.approve:hover { background: rgba(45,74,62,0.1); }
+    .action-btn.reject { color: var(--rust); }
+    .action-btn.reject:hover { background: rgba(200,80,42,0.1); }
+
+    /* Chart placeholder */
+    .chart-bar-wrap { margin-top: 0.5rem; }
+    .chart-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.7rem; }
+    .chart-label { font-size: 0.78rem; color: var(--muted); width: 80px; flex-shrink: 0; }
+    .bar-bg { flex: 1; background: var(--warm); border-radius: 50px; height: 10px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 50px; background: var(--forest); transition: width 1s ease; }
+    .bar-val { font-size: 0.75rem; color: var(--text); font-weight: 500; width: 40px; text-align: right; }
+
+    /* Recent donations mini */
+    .donation-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid #f9f6f2; }
+    .donation-row:last-child { border-bottom: none; }
+    .donor-pill { display: flex; align-items: center; gap: 0.6rem; }
+    .donor-av { width: 32px; height: 32px; border-radius: 50%; background: var(--warm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .donor-n { font-size: 0.85rem; font-weight: 500; }
+    .donor-t { font-size: 0.72rem; color: var(--muted); }
+    .donation-amt { font-weight: 500; font-size: 0.9rem; color: var(--forest); }
+
+    @media (max-width: 1100px) {
+      .kpi-grid { grid-template-columns: repeat(2,1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">Hope<span>Haven</span></div>
+
+  <div class="sidebar-section">Main</div>
+  <ul class="sidebar-nav">
+    <li><a href="#" class="active"><span class="sidebar-icon">📊</span> Dashboard</a></li>
+    <li><a href="children.html"><span class="sidebar-icon">🧒</span> Children</a></li>
+    <li><a href="#"><span class="sidebar-icon">📋</span> Adoptions</a></li>
+    <li><a href="donate.html"><span class="sidebar-icon">💛</span> Donations</a></li>
+  </ul>
+
+  <div class="sidebar-section">Management</div>
+  <ul class="sidebar-nav">
+    <li><a href="#"><span class="sidebar-icon">👥</span> Users</a></li>
+    <li><a href="#"><span class="sidebar-icon">📄</span> Reports</a></li>
+    <li><a href="#"><span class="sidebar-icon">⚙️</span> Settings</a></li>
+  </ul>
+
+  <div class="sidebar-bottom">
+    <div class="admin-badge">
+      <div class="admin-avatar">👤</div>
+      <div>
+        <div class="admin-name">Admin User</div>
+        <div class="admin-role">Super Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1>Dashboard</h1>
+    <div class="topbar-actions">
+      <div class="notification-bell">🔔<div class="notif-dot"></div></div>
+      <button class="btn-add" onclick="alert('Add child form coming soon!')">+ Add Child</button>
+      <a href="index.html" style="font-size:0.82rem;color:var(--muted);text-decoration:none;">← Public Site</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <div class="kpi-icon" style="background:#e8f5e9">🧒</div>
+          <span class="kpi-change up">↑ 12 this month</span>
+        </div>
+        <div class="kpi-num">248</div>
+        <div class="kpi-label">Children in Care</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <div class="kpi-icon" style="background:#fff3e0">📋</div>
+          <span class="kpi-change up">↑ 8 new</span>
+        </div>
+        <div class="kpi-num">34</div>
+        <div class="kpi-label">Pending Requests</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <div class="kpi-icon" style="background:#e8f5e9">✅</div>
+          <span class="kpi-change up">↑ 5 this month</span>
+        </div>
+        <div class="kpi-num">382</div>
+        <div class="kpi-label">Total Adoptions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <div class="kpi-icon" style="background:#fce4ec">💛</div>
+          <span class="kpi-change up">↑ ₹1.2L this month</span>
+        </div>
+        <div class="kpi-num">₹52.4L</div>
+        <div class="kpi-label">Total Donations</div>
+      </div>
+    </div>
+
+    <!-- Two column -->
+    <div class="grid-2">
+      <!-- Adoption requests table -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Adoption Requests</h3>
+          <span class="view-all">View all →</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Family</th>
+              <th>Child</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ramesh Kumar</td>
+              <td>Arjun (7)</td>
+              <td>May 8</td>
+              <td><span class="status-pill pill-pending">● Pending</span></td>
+              <td>
+                <button class="action-btn approve" onclick="approveRow(this)">✓ Approve</button>
+                <button class="action-btn reject" onclick="rejectRow(this)">✗</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Sunil & Priya</td>
+              <td>Meera (5)</td>
+              <td>May 6</td>
+              <td><span class="status-pill pill-pending">● Pending</span></td>
+              <td>
+                <button class="action-btn approve" onclick="approveRow(this)">✓ Approve</button>
+                <button class="action-btn reject" onclick="rejectRow(this)">✗</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Arun Sharma</td>
+              <td>Ravi (10)</td>
+              <td>May 3</td>
+              <td><span class="status-pill pill-approved">● Approved</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Geetha Iyer</td>
+              <td>Lakshmi (4)</td>
+              <td>Apr 28</td>
+              <td><span class="status-pill pill-approved">● Approved</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Venkat Reddy</td>
+              <td>Kiran (12)</td>
+              <td>Apr 20</td>
+              <td><span class="status-pill pill-rejected">● Rejected</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Donations + Chart -->
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+        <div class="card">
+          <div class="card-header">
+            <h3>Donations by Category</h3>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-row"><span class="chart-label">Education</span><div class="bar-bg"><div class="bar-fill" style="width:75%;background:var(--forest)"></div></div><span class="bar-val">₹39L</span></div>
+            <div class="chart-row"><span class="chart-label">Food</span><div class="bar-bg"><div class="bar-fill" style="width:55%;background:var(--rust)"></div></div><span class="bar-val">₹28L</span></div>
+            <div class="chart-row"><span class="chart-label">Healthcare</span><div class="bar-bg"><div class="bar-fill" style="width:38%;background:var(--gold)"></div></div><span class="bar-val">₹20L</span></div>
+            <div class="chart-row"><span class="chart-label">Shelter</span><div class="bar-bg"><div class="bar-fill" style="width:22%;background:#8a7d6e"></div></div><span class="bar-val">₹11L</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Donations</h3>
+            <span class="view-all">View all →</span>
+          </div>
+          <div class="donation-row">
+            <div class="donor-pill"><div class="donor-av">🌟</div><div><div class="donor-n">Ramesh K.</div><div class="donor-t">Education · 2hr ago</div></div></div>
+            <div class="donation-amt">₹2,500</div>
+          </div>
+          <div class="donation-row">
+            <div class="donor-pill"><div class="donor-av">💛</div><div><div class="donor-n">Anonymous</div><div class="donor-t">General · 5hr ago</div></div></div>
+            <div class="donation-amt">₹1,000</div>
+          </div>
+          <div class="donation-row">
+            <div class="donor-pill"><div class="donor-av">🌺</div><div><div class="donor-n">Sunita M.</div><div class="donor-t">Healthcare · Yesterday</div></div></div>
+            <div class="donation-amt">₹5,000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function approveRow(btn) {
+    const td = btn.closest('td');
+    const statusTd = td.previousElementSibling;
+    statusTd.innerHTML = '<span class="status-pill pill-approved">● Approved</span>';
+    td.innerHTML = '—';
+  }
+  function rejectRow(btn) {
+    const td = btn.closest('td');
+    const statusTd = td.previousElementSibling;
+    statusTd.innerHTML = '<span class="status-pill pill-rejected">● Rejected</span>';
+    td.innerHTML = '—';
+  }
+</script>
+</body>
+</html>
