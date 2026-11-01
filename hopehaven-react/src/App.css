@@ -1,0 +1,147 @@
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #263b32;
+  background: #fcfaf5;
+}
+
+.navbar {
+  min-height: 76px;
+  padding: 18px 8%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px solid #e8e5dc;
+}
+
+.navbar h2 {
+  margin: 0;
+  color: #285943;
+  font-size: 28px;
+}
+
+.navbar nav {
+  display: flex;
+  gap: 28px;
+}
+
+.navbar a {
+  color: #34483c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hero {
+  padding: 100px 20px 110px;
+  text-align: center;
+  background: #f0f4e9;
+}
+
+.eyebrow {
+  color: #a65e3b;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.hero h1 {
+  margin: 24px 0;
+  color: #244e3a;
+  font-family: Georgia, serif;
+  font-size: clamp(40px, 6vw, 68px);
+  line-height: 1.15;
+}
+
+.description {
+  max-width: 620px;
+  margin: 0 auto 32px;
+  color: #5e6a60;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.actions a {
+  padding: 15px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.primary {
+  color: #fff;
+  background: #285943;
+}
+
+.secondary {
+  color: #285943;
+  border: 1px solid #285943;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 65px 8%;
+}
+
+.features article {
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e8e5dc;
+  border-radius: 10px;
+}
+
+.features h3 {
+  color: #285943;
+}
+
+.features p {
+  color: #667168;
+  line-height: 1.7;
+}
+
+footer {
+  padding: 24px;
+  text-align: center;
+  background: #244e3a;
+  color: #fff;
+}
+
+@media (max-width: 650px) {
+  .navbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .navbar nav {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    padding: 35px 6%;
+  }
+
+  .hero {
+    padding: 70px 20px;
+  }
+}

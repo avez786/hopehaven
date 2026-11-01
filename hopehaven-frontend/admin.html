@@ -1,328 +1,1871 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard – HopeHaven</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --cream: #faf6f0; --warm: #f0e6d3; --rust: #c8502a; --rust-light: #e87a52;
-      --forest: #2d4a3e; --forest-light: #3d6b5a; --gold: #d4a843;
-      --dark: #1a1a18; --text: #3a3530; --muted: #8a7d6e;
-    }
-    body { font-family: 'DM Sans', sans-serif; background: #f4f1ec; color: var(--text); display: flex; min-height: 100vh; }
+    <head>
+        <meta charset="UTF-8" />
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px; flex-shrink: 0; background: var(--forest); color: white;
-      display: flex; flex-direction: column; padding: 2rem 1.2rem;
-      position: sticky; top: 0; height: 100vh;
-    }
-    .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 2.5rem; padding-left: 0.5rem; }
-    .sidebar-logo span { color: var(--gold); }
-    .sidebar-section { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 0.6rem; padding-left: 0.5rem; }
-    .sidebar-nav { list-style: none; margin-bottom: 2rem; }
-    .sidebar-nav li { margin-bottom: 0.3rem; }
-    .sidebar-nav a {
-      display: flex; align-items: center; gap: 0.7rem;
-      padding: 0.7rem 0.8rem; border-radius: 10px;
-      color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.88rem;
-      transition: all 0.2s;
-    }
-    .sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(255,255,255,0.1); color: white; }
-    .sidebar-nav a.active { background: rgba(212,168,67,0.2); color: var(--gold); }
-    .sidebar-icon { font-size: 1rem; }
-    .sidebar-bottom { margin-top: auto; }
-    .admin-badge {
-      background: rgba(255,255,255,0.08); border-radius: 12px;
-      padding: 0.8rem; display: flex; align-items: center; gap: 0.7rem;
-    }
-    .admin-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-    .admin-name { font-size: 0.82rem; font-weight: 500; }
-    .admin-role { font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    /* MAIN */
-    .main { flex: 1; overflow-y: auto; }
-    .topbar {
-      background: white; padding: 1.2rem 2rem;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 50;
-    }
-    .topbar h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--dark); }
-    .topbar-actions { display: flex; align-items: center; gap: 1rem; }
-    .btn-add {
-      background: var(--rust); color: white; border: none;
-      padding: 0.55rem 1.2rem; border-radius: 50px;
-      font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
-      cursor: pointer; transition: background 0.2s;
-    }
-    .btn-add:hover { background: var(--rust-light); }
-    .notification-bell { font-size: 1.2rem; cursor: pointer; position: relative; }
-    .notif-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--rust); border-radius: 50%; }
+        <title>Admin Dashboard – HopeHaven</title>
 
-    .content { padding: 2rem; }
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    /* KPI CARDS */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
-    .kpi-card {
-      background: white; border-radius: 16px; padding: 1.4rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
-    .kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-    .kpi-change { font-size: 0.72rem; font-weight: 500; }
-    .kpi-change.up { color: #2e7d32; }
-    .kpi-change.down { color: var(--rust); }
-    .kpi-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--dark); margin-bottom: 0.2rem; }
-    .kpi-label { font-size: 0.78rem; color: var(--muted); }
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+            rel="stylesheet"
+        />
 
-    /* TABLES */
-    .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
-    .card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
-    .card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--dark); }
-    .view-all { font-size: 0.78rem; color: var(--rust); text-decoration: none; cursor: pointer; }
-    table { width: 100%; border-collapse: collapse; }
-    th { font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 0 0.5rem 0.7rem; text-align: left; border-bottom: 1px solid #f0e6d3; }
-    td { padding: 0.75rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #f9f6f2; }
-    tr:last-child td { border-bottom: none; }
-    .status-pill { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.7rem; border-radius: 50px; font-size: 0.72rem; font-weight: 500; }
-    .pill-pending { background: rgba(212,168,67,0.12); color: #9a7420; }
-    .pill-approved { background: rgba(45,74,62,0.1); color: var(--forest); }
-    .pill-rejected { background: rgba(200,80,42,0.1); color: var(--rust); }
-    .action-btn {
-      border: none; background: none; cursor: pointer; font-size: 0.78rem;
-      padding: 0.25rem 0.6rem; border-radius: 6px; font-family: 'DM Sans', sans-serif;
-      transition: background 0.15s;
-    }
-    .action-btn.approve { color: var(--forest); }
-    .action-btn.approve:hover { background: rgba(45,74,62,0.1); }
-    .action-btn.reject { color: var(--rust); }
-    .action-btn.reject:hover { background: rgba(200,80,42,0.1); }
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
 
-    /* Chart placeholder */
-    .chart-bar-wrap { margin-top: 0.5rem; }
-    .chart-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.7rem; }
-    .chart-label { font-size: 0.78rem; color: var(--muted); width: 80px; flex-shrink: 0; }
-    .bar-bg { flex: 1; background: var(--warm); border-radius: 50px; height: 10px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 50px; background: var(--forest); transition: width 1s ease; }
-    .bar-val { font-size: 0.75rem; color: var(--text); font-weight: 500; width: 40px; text-align: right; }
+                margin: 0;
 
-    /* Recent donations mini */
-    .donation-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid #f9f6f2; }
-    .donation-row:last-child { border-bottom: none; }
-    .donor-pill { display: flex; align-items: center; gap: 0.6rem; }
-    .donor-av { width: 32px; height: 32px; border-radius: 50%; background: var(--warm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-    .donor-n { font-size: 0.85rem; font-weight: 500; }
-    .donor-t { font-size: 0.72rem; color: var(--muted); }
-    .donation-amt { font-weight: 500; font-size: 0.9rem; color: var(--forest); }
+                padding: 0;
+            }
 
-    @media (max-width: 1100px) {
-      .kpi-grid { grid-template-columns: repeat(2,1fr); }
-      .grid-2 { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-    }
-  </style>
-</head>
-<body>
+            :root {
+                --cream: #faf6f0;
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-logo">Hope<span>Haven</span></div>
+                --warm: #f0e6d3;
 
-  <div class="sidebar-section">Main</div>
-  <ul class="sidebar-nav">
-    <li><a href="#" class="active"><span class="sidebar-icon">📊</span> Dashboard</a></li>
-    <li><a href="children.html"><span class="sidebar-icon">🧒</span> Children</a></li>
-    <li><a href="#"><span class="sidebar-icon">📋</span> Adoptions</a></li>
-    <li><a href="donate.html"><span class="sidebar-icon">💛</span> Donations</a></li>
-  </ul>
+                --rust: #c8502a;
 
-  <div class="sidebar-section">Management</div>
-  <ul class="sidebar-nav">
-    <li><a href="#"><span class="sidebar-icon">👥</span> Users</a></li>
-    <li><a href="#"><span class="sidebar-icon">📄</span> Reports</a></li>
-    <li><a href="#"><span class="sidebar-icon">⚙️</span> Settings</a></li>
-  </ul>
+                --rust-light: #e87a52;
 
-  <div class="sidebar-bottom">
-    <div class="admin-badge">
-      <div class="admin-avatar">👤</div>
-      <div>
-        <div class="admin-name">Admin User</div>
-        <div class="admin-role">Super Admin</div>
-      </div>
-    </div>
-  </div>
-</aside>
+                --forest: #2d4a3e;
 
-<!-- MAIN -->
-<div class="main">
-  <div class="topbar">
-    <h1>Dashboard</h1>
-    <div class="topbar-actions">
-      <div class="notification-bell">🔔<div class="notif-dot"></div></div>
-      <button class="btn-add" onclick="alert('Add child form coming soon!')">+ Add Child</button>
-      <a href="index.html" style="font-size:0.82rem;color:var(--muted);text-decoration:none;">← Public Site</a>
-    </div>
-  </div>
+                --forest-light: #3d6b5a;
 
-  <div class="content">
-    <!-- KPIs -->
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <div class="kpi-icon" style="background:#e8f5e9">🧒</div>
-          <span class="kpi-change up">↑ 12 this month</span>
+                --gold: #d4a843;
+
+                --dark: #1a1a18;
+
+                --text: #3a3530;
+
+                --muted: #8a7d6e;
+            }
+
+            body {
+                font-family: "DM Sans", sans-serif;
+
+                background: #f4f1ec;
+
+                color: var(--text);
+
+                display: flex;
+
+                min-height: 100vh;
+            }
+
+            /* SIDEBAR */
+
+            .sidebar {
+                width: 240px;
+
+                flex-shrink: 0;
+
+                background: var(--forest);
+
+                color: white;
+
+                display: flex;
+
+                flex-direction: column;
+
+                padding: 2rem 1.2rem;
+
+                position: sticky;
+
+                top: 0;
+
+                height: 100vh;
+            }
+
+            .sidebar-logo {
+                font-family: "Playfair Display", serif;
+
+                font-size: 1.3rem;
+
+                font-weight: 700;
+
+                margin-bottom: 2.5rem;
+
+                padding-left: 0.5rem;
+            }
+
+            .sidebar-logo span {
+                color: var(--gold);
+            }
+
+            .sidebar-section {
+                font-size: 0.68rem;
+
+                letter-spacing: 0.12em;
+
+                text-transform: uppercase;
+
+                color: rgba(255, 255, 255, 0.35);
+
+                margin-bottom: 0.6rem;
+
+                padding-left: 0.5rem;
+            }
+
+            .sidebar-nav {
+                list-style: none;
+
+                margin-bottom: 2rem;
+            }
+
+            .sidebar-nav li {
+                margin-bottom: 0.3rem;
+            }
+
+            .sidebar-nav a {
+                display: flex;
+
+                align-items: center;
+
+                gap: 0.7rem;
+
+                padding: 0.7rem 0.8rem;
+
+                border-radius: 10px;
+
+                color: rgba(255, 255, 255, 0.7);
+
+                text-decoration: none;
+
+                font-size: 0.88rem;
+
+                transition: all 0.2s;
+            }
+
+            .sidebar-nav a:hover,
+            .sidebar-nav a.active {
+                background: rgba(255, 255, 255, 0.1);
+
+                color: white;
+            }
+
+            .sidebar-nav a.active {
+                background: rgba(212, 168, 67, 0.2);
+
+                color: var(--gold);
+            }
+
+            .sidebar-icon {
+                font-size: 1rem;
+            }
+
+            .sidebar-bottom {
+                margin-top: auto;
+            }
+
+            .admin-badge {
+                background: rgba(255, 255, 255, 0.08);
+
+                border-radius: 12px;
+
+                padding: 0.8rem;
+
+                display: flex;
+
+                align-items: center;
+
+                gap: 0.7rem;
+            }
+
+            .admin-avatar {
+                width: 34px;
+
+                height: 34px;
+
+                border-radius: 50%;
+
+                background: var(--gold);
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                font-size: 0.9rem;
+            }
+
+            .admin-name {
+                font-size: 0.82rem;
+
+                font-weight: 500;
+            }
+
+            .admin-role {
+                font-size: 0.7rem;
+
+                color: rgba(255, 255, 255, 0.45);
+            }
+
+            /* MAIN */
+
+            .main {
+                flex: 1;
+
+                overflow-y: auto;
+            }
+
+            .topbar {
+                background: white;
+
+                padding: 1.2rem 2rem;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+                position: sticky;
+
+                top: 0;
+
+                z-index: 50;
+            }
+
+            .topbar h1 {
+                font-family: "Playfair Display", serif;
+
+                font-size: 1.3rem;
+
+                color: var(--dark);
+            }
+
+            .topbar-actions {
+                display: flex;
+
+                align-items: center;
+
+                gap: 1rem;
+            }
+
+            .btn-add {
+                background: var(--rust);
+
+                color: white;
+
+                border: none;
+
+                padding: 0.55rem 1.2rem;
+
+                border-radius: 50px;
+
+                font-family: "DM Sans", sans-serif;
+
+                font-size: 0.85rem;
+
+                font-weight: 500;
+
+                cursor: pointer;
+
+                transition: background 0.2s;
+            }
+
+            .btn-add:hover {
+                background: var(--rust-light);
+            }
+
+            .notification-bell {
+                font-size: 1.2rem;
+
+                cursor: pointer;
+
+                position: relative;
+            }
+
+            .notif-dot {
+                position: absolute;
+
+                top: -2px;
+
+                right: -2px;
+
+                width: 8px;
+
+                height: 8px;
+
+                background: var(--rust);
+
+                border-radius: 50%;
+            }
+
+            .content {
+                padding: 2rem;
+            }
+
+            /* KPI CARDS */
+
+            .kpi-grid {
+                display: grid;
+
+                grid-template-columns: repeat(4, 1fr);
+
+                gap: 1.2rem;
+
+                margin-bottom: 2rem;
+            }
+
+            .kpi-card {
+                background: white;
+
+                border-radius: 16px;
+
+                padding: 1.4rem;
+
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .kpi-top {
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                margin-bottom: 0.8rem;
+            }
+
+            .kpi-icon {
+                width: 40px;
+
+                height: 40px;
+
+                border-radius: 10px;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                font-size: 1.2rem;
+            }
+
+            .kpi-change {
+                font-size: 0.72rem;
+
+                font-weight: 500;
+            }
+
+            .kpi-change.up {
+                color: #2e7d32;
+            }
+
+            .kpi-change.down {
+                color: var(--rust);
+            }
+
+            .kpi-num {
+                font-family: "Playfair Display", serif;
+
+                font-size: 1.8rem;
+
+                color: var(--dark);
+
+                margin-bottom: 0.2rem;
+            }
+
+            .kpi-label {
+                font-size: 0.78rem;
+
+                color: var(--muted);
+            }
+
+            /* TABLES */
+
+            .grid-2 {
+                display: grid;
+
+                grid-template-columns: 1.5fr 1fr;
+
+                gap: 1.2rem;
+
+                margin-bottom: 2rem;
+            }
+
+            .card {
+                background: white;
+
+                border-radius: 16px;
+
+                padding: 1.5rem;
+
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .card-header {
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                margin-bottom: 1.2rem;
+            }
+
+            .card-header h3 {
+                font-family: "Playfair Display", serif;
+
+                font-size: 1.1rem;
+
+                color: var(--dark);
+            }
+
+            .view-all {
+                font-size: 0.78rem;
+
+                color: var(--rust);
+
+                text-decoration: none;
+
+                cursor: pointer;
+            }
+
+            table {
+                width: 100%;
+
+                border-collapse: collapse;
+            }
+
+            th {
+                font-size: 0.72rem;
+
+                font-weight: 500;
+
+                text-transform: uppercase;
+
+                letter-spacing: 0.06em;
+
+                color: var(--muted);
+
+                padding: 0 0.5rem 0.7rem;
+
+                text-align: left;
+
+                border-bottom: 1px solid #f0e6d3;
+            }
+
+            td {
+                padding: 0.75rem 0.5rem;
+
+                font-size: 0.85rem;
+
+                border-bottom: 1px solid #f9f6f2;
+            }
+
+            tr:last-child td {
+                border-bottom: none;
+            }
+
+            .status-pill {
+                display: inline-flex;
+
+                align-items: center;
+
+                gap: 0.3rem;
+
+                padding: 0.2rem 0.7rem;
+
+                border-radius: 50px;
+
+                font-size: 0.72rem;
+
+                font-weight: 500;
+            }
+
+            .pill-pending {
+                background: rgba(212, 168, 67, 0.12);
+
+                color: #9a7420;
+            }
+
+            .pill-approved {
+                background: rgba(45, 74, 62, 0.1);
+
+                color: var(--forest);
+            }
+
+            .pill-rejected {
+                background: rgba(200, 80, 42, 0.1);
+
+                color: var(--rust);
+            }
+
+            .action-btn {
+                border: none;
+
+                background: none;
+
+                cursor: pointer;
+
+                font-size: 0.78rem;
+
+                padding: 0.25rem 0.6rem;
+
+                border-radius: 6px;
+
+                font-family: "DM Sans", sans-serif;
+
+                transition: background 0.15s;
+            }
+
+            .action-btn.approve {
+                color: var(--forest);
+            }
+
+            .action-btn.approve:hover {
+                background: rgba(45, 74, 62, 0.1);
+            }
+
+            .action-btn.reject {
+                color: var(--rust);
+            }
+
+            .action-btn.reject:hover {
+                background: rgba(200, 80, 42, 0.1);
+            }
+
+            /* Chart placeholder */
+
+            .chart-bar-wrap {
+                margin-top: 0.5rem;
+            }
+
+            .chart-row {
+                display: flex;
+
+                align-items: center;
+
+                gap: 0.8rem;
+
+                margin-bottom: 0.7rem;
+            }
+
+            .chart-label {
+                font-size: 0.78rem;
+
+                color: var(--muted);
+
+                width: 80px;
+
+                flex-shrink: 0;
+            }
+
+            .bar-bg {
+                flex: 1;
+
+                background: var(--warm);
+
+                border-radius: 50px;
+
+                height: 10px;
+
+                overflow: hidden;
+            }
+
+            .bar-fill {
+                height: 100%;
+
+                border-radius: 50px;
+
+                background: var(--forest);
+
+                transition: width 1s ease;
+            }
+
+            .bar-val {
+                font-size: 0.75rem;
+
+                color: var(--text);
+
+                font-weight: 500;
+
+                width: 40px;
+
+                text-align: right;
+            }
+
+            /* Recent donations mini */
+
+            .donation-row {
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                padding: 0.7rem 0;
+
+                border-bottom: 1px solid #f9f6f2;
+            }
+
+            .donation-row:last-child {
+                border-bottom: none;
+            }
+
+            .donor-pill {
+                display: flex;
+
+                align-items: center;
+
+                gap: 0.6rem;
+            }
+
+            .donor-av {
+                width: 32px;
+
+                height: 32px;
+
+                border-radius: 50%;
+
+                background: var(--warm);
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                font-size: 0.9rem;
+            }
+
+            .donor-n {
+                font-size: 0.85rem;
+
+                font-weight: 500;
+            }
+
+            .donor-t {
+                font-size: 0.72rem;
+
+                color: var(--muted);
+            }
+
+            .donation-amt {
+                font-weight: 500;
+
+                font-size: 0.9rem;
+
+                color: var(--forest);
+            }
+
+            @media (max-width: 1100px) {
+                .kpi-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .grid-2 {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .sidebar {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                Hope
+
+                <span>Haven</span>
+            </div>
+
+            <div class="sidebar-section">Main</div>
+
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="#" class="active">
+                        <span class="sidebar-icon">📊</span>
+
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="children.html">
+                        <span class="sidebar-icon">🧒</span>
+
+                        Children
+                    </a>
+                </li>
+
+                <li>
+                    <a
+                        href="#adoptions"
+                        onclick="
+                            openAdoptionsDrawer();
+                            return false;
+                        "
+                    >
+                        <span class="sidebar-icon">📋</span>
+
+                        Adoptions
+                    </a>
+                </li>
+
+                <li>
+                    <a
+                        href="#donations"
+                        onclick="
+                            openDonationsDrawer();
+                            return false;
+                        "
+                    >
+                        <span class="sidebar-icon">💛</span>
+
+                        Donations
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-section">Management</div>
+
+            <ul class="sidebar-nav">
+                <li>
+                    <a
+                        href="#users"
+                        onclick="
+                            openUsersDrawer();
+                            return false;
+                        "
+                    >
+                        <span class="sidebar-icon">👥</span>
+
+                        Users
+                    </a>
+                </li>
+
+                <li>
+                    <a
+                        href="#reports"
+                        onclick="
+                            openReportsDrawer();
+                            return false;
+                        "
+                    >
+                        <span class="sidebar-icon">📄</span>
+
+                        Reports
+                    </a>
+                </li>
+
+                <li>
+                    <a
+                        href="#settings"
+                        onclick="
+                            openSettingsDrawer();
+                            return false;
+                        "
+                    >
+                        <span class="sidebar-icon">⚙️</span>
+
+                        Settings
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-bottom">
+                <div class="admin-badge">
+                    <div class="admin-avatar">👤</div>
+
+                    <div>
+                        <div class="admin-name">Admin User</div>
+
+                        <div class="admin-role">Super Admin</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+
+        <div class="main">
+            <div class="topbar">
+                <h1>Dashboard</h1>
+
+                <div class="topbar-actions">
+                    <div class="notification-bell">
+                        🔔
+
+                        <div class="notif-dot"></div>
+                    </div>
+
+                    <button class="btn-add" onclick="openAddChildModal()">+ Add Child</button>
+                    <button class="btn-add" type="button" onclick="openAdoptionsDrawer()">Manage Adoptions</button>
+                    <button class="btn-add" type="button" onclick="openChildrenDrawer()">Manage Children</button>
+
+                    <a href="index.html" style="font-size: 0.82rem; color: var(--muted); text-decoration: none">← Public Site</a>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- KPIs -->
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-top">
+                            <div class="kpi-icon" style="background: #e8f5e9">🧒</div>
+
+                            <span class="kpi-change up">↑ 12 this month</span>
+                        </div>
+
+                        <div class="kpi-num">248</div>
+
+                        <div class="kpi-label">Children in Care</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-top">
+                            <div class="kpi-icon" style="background: #fff3e0">📋</div>
+
+                            <span class="kpi-change up">↑ 8 new</span>
+                        </div>
+
+                        <div class="kpi-num">34</div>
+
+                        <div class="kpi-label">Pending Requests</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-top">
+                            <div class="kpi-icon" style="background: #e8f5e9">✅</div>
+
+                            <span class="kpi-change up">↑ 5 this month</span>
+                        </div>
+
+                        <div class="kpi-num">382</div>
+
+                        <div class="kpi-label">Total Adoptions</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-top">
+                            <div class="kpi-icon" style="background: #fce4ec">💛</div>
+
+                            <span class="kpi-change up">↑ ₹1.2L this month</span>
+                        </div>
+
+                        <div class="kpi-num">₹52.4L</div>
+
+                        <div class="kpi-label">Total Donations</div>
+                    </div>
+                </div>
+
+                <!-- Two column -->
+
+                <div class="grid-2">
+                    <!-- Adoption requests table -->
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Adoption Requests</h3>
+
+                            <span class="view-all">View all →</span>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Family</th>
+
+                                    <th>Child</th>
+
+                                    <th>Date</th>
+
+                                    <th>Status</th>
+
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="adoptionTableBody">
+                                <tr>
+                                    <td colspan="5">Loading adoption requests...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Donations + Chart -->
+
+                    <div style="display: flex; flex-direction: column; gap: 1.2rem">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Donations by Category</h3>
+                            </div>
+
+                            <div class="chart-bar-wrap" id="donationsCategoryChart">
+                                <p>Loading donation categories...</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Recent Donations</h3>
+
+                                <span class="view-all">View all →</span>
+                            </div>
+
+                            <div id="recentDonationsList">
+                                <p>Loading recent donations...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="kpi-num">248</div>
-        <div class="kpi-label">Children in Care</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <div class="kpi-icon" style="background:#fff3e0">📋</div>
-          <span class="kpi-change up">↑ 8 new</span>
-        </div>
-        <div class="kpi-num">34</div>
-        <div class="kpi-label">Pending Requests</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <div class="kpi-icon" style="background:#e8f5e9">✅</div>
-          <span class="kpi-change up">↑ 5 this month</span>
-        </div>
-        <div class="kpi-num">382</div>
-        <div class="kpi-label">Total Adoptions</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <div class="kpi-icon" style="background:#fce4ec">💛</div>
-          <span class="kpi-change up">↑ ₹1.2L this month</span>
-        </div>
-        <div class="kpi-num">₹52.4L</div>
-        <div class="kpi-label">Total Donations</div>
-      </div>
-    </div>
 
-    <!-- Two column -->
-    <div class="grid-2">
-      <!-- Adoption requests table -->
-      <div class="card">
-        <div class="card-header">
-          <h3>Adoption Requests</h3>
-          <span class="view-all">View all →</span>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Family</th>
-              <th>Child</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Ramesh Kumar</td>
-              <td>Arjun (7)</td>
-              <td>May 8</td>
-              <td><span class="status-pill pill-pending">● Pending</span></td>
-              <td>
-                <button class="action-btn approve" onclick="approveRow(this)">✓ Approve</button>
-                <button class="action-btn reject" onclick="rejectRow(this)">✗</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Sunil & Priya</td>
-              <td>Meera (5)</td>
-              <td>May 6</td>
-              <td><span class="status-pill pill-pending">● Pending</span></td>
-              <td>
-                <button class="action-btn approve" onclick="approveRow(this)">✓ Approve</button>
-                <button class="action-btn reject" onclick="rejectRow(this)">✗</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Arun Sharma</td>
-              <td>Ravi (10)</td>
-              <td>May 3</td>
-              <td><span class="status-pill pill-approved">● Approved</span></td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td>Geetha Iyer</td>
-              <td>Lakshmi (4)</td>
-              <td>Apr 28</td>
-              <td><span class="status-pill pill-approved">● Approved</span></td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td>Venkat Reddy</td>
-              <td>Kiran (12)</td>
-              <td>Apr 20</td>
-              <td><span class="status-pill pill-rejected">● Rejected</span></td>
-              <td>—</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <!-- RIGHT-SIDE CHILD MANAGEMENT DRAWER (hidden until requested) -->
+        <div
+            id="childrenDrawerBackdrop"
+            onclick="closeChildrenDrawer()"
+            style="display: none; position: fixed; inset: 0; background: rgba(20, 35, 28, 0.38); z-index: 8998"
+        ></div>
+        <aside
+            id="childrenDrawer"
+            aria-label="Manage Children"
+            style="
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+                width: min(720px, 92vw);
+                background: #fff;
+                z-index: 8999;
+                box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
+                transform: translateX(105%);
+                transition: transform 0.28s ease;
+                display: flex;
+                flex-direction: column;
+            "
+        >
+            <div
+                style="
+                    padding: 22px 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    border-bottom: 1px solid #eee;
+                "
+            >
+                <div>
+                    <h2 style="margin: 0; color: #244b3a">Manage Children</h2>
+                    <p style="margin: 5px 0 0; color: #7d897f; font-size: 13px">Add, edit, or remove child profiles</p>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center">
+                    <button type="button" class="btn-add" onclick="loadChildrenManagement()">Refresh</button>
+                    <button
+                        type="button"
+                        onclick="closeChildrenDrawer()"
+                        aria-label="Close Manage Children"
+                        style="border: 0; background: #f3f5f3; border-radius: 9px; padding: 8px 13px; font-size: 24px; cursor: pointer"
+                    >
+                        &times;
+                    </button>
+                </div>
+            </div>
+            <div style="padding: 18px 24px; overflow: auto; flex: 1">
+                <table style="width: 100%; border-collapse: collapse; min-width: 520px">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 12px 8px">Name</th>
+                            <th style="text-align: left; padding: 12px 8px">Age</th>
+                            <th style="text-align: left; padding: 12px 8px">City</th>
+                            <th style="text-align: left; padding: 12px 8px">Status</th>
+                            <th style="text-align: left; padding: 12px 8px">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="childrenManagementBody">
+                        <tr><td colspan="5">Click Refresh to load children.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </aside>
 
-      <!-- Donations + Chart -->
-      <div style="display:flex;flex-direction:column;gap:1.2rem;">
-        <div class="card">
-          <div class="card-header">
-            <h3>Donations by Category</h3>
-          </div>
-          <div class="chart-bar-wrap">
-            <div class="chart-row"><span class="chart-label">Education</span><div class="bar-bg"><div class="bar-fill" style="width:75%;background:var(--forest)"></div></div><span class="bar-val">₹39L</span></div>
-            <div class="chart-row"><span class="chart-label">Food</span><div class="bar-bg"><div class="bar-fill" style="width:55%;background:var(--rust)"></div></div><span class="bar-val">₹28L</span></div>
-            <div class="chart-row"><span class="chart-label">Healthcare</span><div class="bar-bg"><div class="bar-fill" style="width:38%;background:var(--gold)"></div></div><span class="bar-val">₹20L</span></div>
-            <div class="chart-row"><span class="chart-label">Shelter</span><div class="bar-bg"><div class="bar-fill" style="width:22%;background:#8a7d6e"></div></div><span class="bar-val">₹11L</span></div>
-          </div>
+        <!-- RIGHT-SIDE ADOPTION MANAGEMENT DRAWER -->
+        <div
+            id="adoptionsDrawerBackdrop"
+            onclick="closeAdoptionsDrawer()"
+            style="display: none; position: fixed; inset: 0; background: rgba(20, 35, 28, 0.38); z-index: 8996"
+        ></div>
+        <aside
+            id="adoptionsDrawer"
+            aria-label="Manage Adoptions"
+            style="
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+                width: min(1000px, 96vw);
+                background: #fff;
+                z-index: 8997;
+                box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
+                transform: translateX(105%);
+                transition: transform 0.28s ease;
+                display: flex;
+                flex-direction: column;
+            "
+        >
+            <div
+                style="
+                    padding: 22px 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    border-bottom: 1px solid #eee;
+                "
+            >
+                <div>
+                    <h2 style="margin: 0; color: #244b3a">Manage Adoptions</h2>
+                    <p style="margin: 5px 0 0; color: #7d897f; font-size: 13px">Review family requests and approve or reject pending applications</p>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center">
+                    <button type="button" class="btn-add" onclick="loadAdoptions()">Refresh</button>
+                    <button
+                        type="button"
+                        onclick="closeAdoptionsDrawer()"
+                        aria-label="Close Manage Adoptions"
+                        style="border: 0; background: #f3f5f3; border-radius: 9px; padding: 8px 13px; font-size: 24px; cursor: pointer"
+                    >
+                        &times;
+                    </button>
+                </div>
+            </div>
+            <div style="padding: 18px 24px; overflow: auto; flex: 1">
+                <table style="width: 100%; border-collapse: collapse; min-width: 760px">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 12px 8px">Family</th>
+                            <th style="text-align: left; padding: 12px 8px">Email</th>
+                            <th style="text-align: left; padding: 12px 8px">Child</th>
+                            <th style="text-align: left; padding: 12px 8px">Message</th>
+                            <th style="text-align: left; padding: 12px 8px">Date</th>
+                            <th style="text-align: left; padding: 12px 8px">Status</th>
+                            <th style="text-align: left; padding: 12px 8px">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adoptionManagementBody">
+                        <tr><td colspan="7">Loading adoption requests...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </aside>
+
+        <!-- USERS / REPORTS / SETTINGS DRAWERS -->
+        <div
+            id="utilityDrawerBackdrop"
+            onclick="closeUtilityDrawer()"
+            style="display: none; position: fixed; inset: 0; background: rgba(20, 35, 28, 0.38); z-index: 9000"
+        ></div>
+        <aside
+            id="utilityDrawer"
+            style="
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+                width: min(850px, 94vw);
+                background: #fff;
+                z-index: 9001;
+                box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
+                transform: translateX(105%);
+                transition: transform 0.28s ease;
+                display: flex;
+                flex-direction: column;
+            "
+        >
+            <div
+                style="
+                    padding: 22px 24px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1px solid #eee;
+                    gap: 12px;
+                "
+            >
+                <div>
+                    <h2 id="utilityTitle" style="margin: 0; color: #244b3a">Management</h2>
+                    <p id="utilitySubtitle" style="margin: 5px 0 0; color: #7d897f; font-size: 13px"></p>
+                </div>
+                <div style="display: flex; gap: 8px">
+                    <button id="utilityRefresh" class="btn-add" type="button" onclick="refreshUtilityDrawer()">Refresh</button>
+                    <button
+                        type="button"
+                        onclick="closeUtilityDrawer()"
+                        style="border: 0; background: #f3f5f3; border-radius: 9px; padding: 8px 13px; font-size: 24px; cursor: pointer"
+                    >
+                        &times;
+                    </button>
+                </div>
+            </div>
+            <div id="utilityContent" style="padding: 22px 24px; overflow: auto; flex: 1"></div>
+        </aside>
+
+        <!-- ADD / EDIT CHILD MODAL -->
+        <div
+            id="addChildModal"
+            style="
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                background: rgba(0, 0, 0, 0.55);
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            "
+        >
+            <div
+                style="
+                    background: #fff;
+                    width: 100%;
+                    max-width: 560px;
+                    max-height: 90vh;
+                    overflow: auto;
+                    border-radius: 16px;
+                    padding: 24px;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+                "
+            >
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px">
+                    <h2 id="childModalTitle" style="margin: 0; color: #244b3a">Add Child</h2>
+                    <button
+                        type="button"
+                        onclick="closeAddChildModal()"
+                        aria-label="Close"
+                        style="border: 0; background: transparent; font-size: 26px; cursor: pointer"
+                    >
+                        &times;
+                    </button>
+                </div>
+                <form id="addChildForm">
+                    <label for="childName">Name *</label>
+                    <input
+                        id="childName"
+                        name="name"
+                        required
+                        maxlength="100"
+                        style="width: 100%; box-sizing: border-box; margin: 6px 0 14px; padding: 11px; border: 1px solid #ccd5cf; border-radius: 8px"
+                    />
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px">
+                        <div>
+                            <label for="childAge">Age *</label>
+                            <input
+                                id="childAge"
+                                name="age"
+                                type="number"
+                                min="0"
+                                max="18"
+                                required
+                                style="
+                                    width: 100%;
+                                    box-sizing: border-box;
+                                    margin: 6px 0 14px;
+                                    padding: 11px;
+                                    border: 1px solid #ccd5cf;
+                                    border-radius: 8px;
+                                "
+                            />
+                        </div>
+                        <div>
+                            <label for="childCity">City *</label>
+                            <input
+                                id="childCity"
+                                name="city"
+                                required
+                                maxlength="100"
+                                style="
+                                    width: 100%;
+                                    box-sizing: border-box;
+                                    margin: 6px 0 14px;
+                                    padding: 11px;
+                                    border: 1px solid #ccd5cf;
+                                    border-radius: 8px;
+                                "
+                            />
+                        </div>
+                    </div>
+                    <label for="childBio">Bio *</label>
+                    <textarea
+                        id="childBio"
+                        name="bio"
+                        required
+                        rows="3"
+                        maxlength="1000"
+                        style="
+                            width: 100%;
+                            box-sizing: border-box;
+                            margin: 6px 0 14px;
+                            padding: 11px;
+                            border: 1px solid #ccd5cf;
+                            border-radius: 8px;
+                            resize: vertical;
+                        "
+                    ></textarea>
+                    <label for="childInterests">Interests</label>
+                    <input
+                        id="childInterests"
+                        name="interests"
+                        maxlength="500"
+                        placeholder="e.g. Drawing, football, reading"
+                        style="width: 100%; box-sizing: border-box; margin: 6px 0 14px; padding: 11px; border: 1px solid #ccd5cf; border-radius: 8px"
+                    />
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px">
+                        <div>
+                            <label for="childEmoji">Child avatar</label>
+                            <select
+                                id="childEmoji"
+                                name="imageEmoji"
+                                style="
+                                    width: 100%;
+                                    box-sizing: border-box;
+                                    margin: 6px 0 14px;
+                                    padding: 11px;
+                                    border: 1px solid #ccd5cf;
+                                    border-radius: 8px;
+                                "
+                            >
+                                <option value="👦">Boy 👦</option>
+                                <option value="👧">Girl 👧</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="childStatus">Status</label>
+                            <select
+                                id="childStatus"
+                                name="status"
+                                style="
+                                    width: 100%;
+                                    box-sizing: border-box;
+                                    margin: 6px 0 14px;
+                                    padding: 11px;
+                                    border: 1px solid #ccd5cf;
+                                    border-radius: 8px;
+                                "
+                            >
+                                <option value="AVAILABLE">AVAILABLE</option>
+                                <option value="PENDING">PENDING</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p id="addChildError" role="alert" style="display: none; color: #b42318; margin: 0 0 12px"></p>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px">
+                        <button
+                            type="button"
+                            onclick="closeAddChildModal()"
+                            style="padding: 10px 16px; border: 1px solid #ccd5cf; border-radius: 8px; background: #fff; cursor: pointer"
+                        >
+                            Cancel
+                        </button>
+                        <button id="saveChildButton" type="submit" class="btn-add">Save Child</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <h3>Recent Donations</h3>
-            <span class="view-all">View all →</span>
-          </div>
-          <div class="donation-row">
-            <div class="donor-pill"><div class="donor-av">🌟</div><div><div class="donor-n">Ramesh K.</div><div class="donor-t">Education · 2hr ago</div></div></div>
-            <div class="donation-amt">₹2,500</div>
-          </div>
-          <div class="donation-row">
-            <div class="donor-pill"><div class="donor-av">💛</div><div><div class="donor-n">Anonymous</div><div class="donor-t">General · 5hr ago</div></div></div>
-            <div class="donation-amt">₹1,000</div>
-          </div>
-          <div class="donation-row">
-            <div class="donor-pill"><div class="donor-av">🌺</div><div><div class="donor-n">Sunita M.</div><div class="donor-t">Healthcare · Yesterday</div></div></div>
-            <div class="donation-amt">₹5,000</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+        <script>
+            const token = localStorage.getItem("token");
 
-<script>
-  function approveRow(btn) {
-    const td = btn.closest('td');
-    const statusTd = td.previousElementSibling;
-    statusTd.innerHTML = '<span class="status-pill pill-approved">● Approved</span>';
-    td.innerHTML = '—';
-  }
-  function rejectRow(btn) {
-    const td = btn.closest('td');
-    const statusTd = td.previousElementSibling;
-    statusTd.innerHTML = '<span class="status-pill pill-rejected">● Rejected</span>';
-    td.innerHTML = '—';
-  }
-</script>
-</body>
+            if (!token) {
+                window.location.replace("login.html");
+            }
+        </script>
+
+        <script>
+            const API_URL = "http://localhost:8080";
+
+            const authToken = localStorage.getItem("token");
+
+            let editingChildId = null;
+
+            function openAddChildModal() {
+                editingChildId = null;
+                const form = document.getElementById("addChildForm");
+                form.reset();
+                form.elements.imageEmoji.value = "👦";
+                form.elements.status.value = "AVAILABLE";
+                document.getElementById("childModalTitle").textContent = "Add Child";
+                document.getElementById("saveChildButton").textContent = "Save Child";
+                document.getElementById("addChildError").style.display = "none";
+                document.getElementById("addChildModal").style.display = "flex";
+                document.getElementById("childName").focus();
+            }
+
+            function openEditChildModal(id) {
+                const child = dashboardChildren.find((item) => Number(item.id) === Number(id));
+                if (!child) {
+                    alert("Child details not found. Refresh and try again.");
+                    return;
+                }
+                editingChildId = child.id;
+                const form = document.getElementById("addChildForm");
+                form.elements.name.value = child.name || "";
+                form.elements.age.value = child.age ?? "";
+                form.elements.city.value = child.city || "";
+                form.elements.bio.value = child.bio || "";
+                form.elements.interests.value = child.interests || "";
+                form.elements.imageEmoji.value = child.imageEmoji || "👦";
+                form.elements.status.value = child.status || "AVAILABLE";
+                document.getElementById("childModalTitle").textContent = "Edit Child";
+                document.getElementById("saveChildButton").textContent = "Save Changes";
+                document.getElementById("addChildError").style.display = "none";
+                document.getElementById("addChildModal").style.display = "flex";
+                document.getElementById("childName").focus();
+            }
+
+            function closeAddChildModal() {
+                document.getElementById("addChildModal").style.display = "none";
+                editingChildId = null;
+            }
+
+            document.getElementById("addChildModal").addEventListener("click", (event) => {
+                if (event.target.id === "addChildModal") closeAddChildModal();
+            });
+
+            document.getElementById("addChildForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const form = event.currentTarget;
+                const errorBox = document.getElementById("addChildError");
+                const saveButton = document.getElementById("saveChildButton");
+                const payload = {
+                    name: form.elements.name.value.trim(),
+                    age: Number(form.elements.age.value),
+                    city: form.elements.city.value.trim(),
+                    bio: form.elements.bio.value.trim(),
+                    interests: form.elements.interests.value.trim(),
+                    imageEmoji: form.elements.imageEmoji.value.trim() || "🧒",
+                    status: form.elements.status.value,
+                };
+
+                errorBox.style.display = "none";
+                if (!payload.name || !payload.city || !payload.bio || !Number.isInteger(payload.age) || payload.age < 0 || payload.age > 18) {
+                    errorBox.textContent = "Enter a name, city, bio, and a valid age between 0 and 18.";
+                    errorBox.style.display = "block";
+                    return;
+                }
+
+                saveButton.disabled = true;
+                saveButton.textContent = "Saving...";
+                try {
+                    const editing = editingChildId !== null;
+                    const response = await fetch(`${API_URL}/api/children${editing ? `/${editingChildId}` : ""}`, {
+                        method: editing ? "PUT" : "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                        body: JSON.stringify(payload),
+                    });
+                    if (!response.ok) {
+                        const detail = await response.text();
+                        throw new Error(detail || `Could not save child (${response.status}).`);
+                    }
+                    form.reset();
+                    form.elements.imageEmoji.value = "👦";
+                    form.elements.status.value = "AVAILABLE";
+                    closeAddChildModal();
+                    await loadDashboardStats();
+                    await loadChildrenManagement();
+                    alert(editing ? "Child updated successfully." : "Child added successfully.");
+                } catch (error) {
+                    errorBox.textContent = error.message || "Could not save child.";
+                    errorBox.style.display = "block";
+                } finally {
+                    saveButton.disabled = false;
+                    saveButton.textContent = "Save Child";
+                }
+            });
+
+            async function loadAdoptions() {
+                const tbody = document.getElementById("adoptionTableBody");
+                const managementBody = document.getElementById("adoptionManagementBody");
+                try {
+                    const response = await fetch(`${API_URL}/api/adoptions`, {
+                        headers: {Authorization: `Bearer ${authToken}`},
+                    });
+                    if (!response.ok) throw new Error(`Failed to load requests (${response.status})`);
+                    const requests = await response.json();
+                    if (!requests.length) {
+                        if (tbody) tbody.innerHTML = '<tr><td colspan="5">No adoption requests found.</td></tr>';
+                        if (managementBody) managementBody.innerHTML = '<tr><td colspan="7">No adoption requests found.</td></tr>';
+                        return;
+                    }
+                    const rows = requests.map((request) => {
+                        const family = request.user
+                            ? `${request.user.firstName || ""} ${request.user.lastName || ""}`.trim() || "Unknown family"
+                            : "Unknown family";
+                        const email = request.user?.email || "—";
+                        const child = request.child ? `${request.child.name || "Unknown child"} (${request.child.age ?? "—"})` : "Unknown child";
+                        const date = request.requestedAt ? new Date(request.requestedAt).toLocaleDateString() : "—";
+                        const status = String(request.status || "PENDING").toUpperCase();
+                        const statusClass = {PENDING: "pill-pending", APPROVED: "pill-approved", REJECTED: "pill-rejected"}[status] || "pill-pending";
+                        const actions =
+                            status === "PENDING"
+                                ? `<button class="action-btn approve" onclick="updateAdoption(${Number(request.id)}, 'approve')">✓ Approve</button> <button class="action-btn reject" onclick="updateAdoption(${Number(request.id)}, 'reject')">✗ Reject</button>`
+                                : "—";
+                        const message = request.message ? escapeHtml(request.message) : "—";
+                        return {
+                            summary: `<tr><td>${escapeHtml(family)}</td><td>${escapeHtml(child)}</td><td>${escapeHtml(date)}</td><td><span class="status-pill ${statusClass}">● ${escapeHtml(status)}</span></td><td>${actions}</td></tr>`,
+                            full: `<tr><td>${escapeHtml(family)}</td><td>${escapeHtml(email)}</td><td>${escapeHtml(child)}</td><td style="max-width:220px;white-space:normal;">${message}</td><td>${escapeHtml(date)}</td><td><span class="status-pill ${statusClass}">● ${escapeHtml(status)}</span></td><td style="min-width:150px;">${actions}</td></tr>`,
+                        };
+                    });
+                    if (tbody) tbody.innerHTML = rows.map((row) => row.summary).join("");
+                    if (managementBody) managementBody.innerHTML = rows.map((row) => row.full).join("");
+                } catch (error) {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="5">${escapeHtml(error.message)}</td></tr>`;
+                    if (managementBody) managementBody.innerHTML = `<tr><td colspan="7">${escapeHtml(error.message)}</td></tr>`;
+                }
+            }
+
+            async function updateAdoption(id, action) {
+                if (!confirm(`Are you sure you want to ${action} this request?`)) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_URL}/api/adoptions/${id}/${action}`, {
+                        method: "PUT",
+
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Update failed (${response.status})`);
+                    }
+
+                    await loadAdoptions();
+                    await loadDashboardStats();
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+
+            let dashboardChildren = [];
+
+            function renderChildrenManagementFromData(children) {
+                const tbody = document.getElementById("childrenManagementBody");
+                if (!tbody) return;
+                if (!children.length) {
+                    tbody.innerHTML = '<tr><td colspan="5">No children found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = children
+                    .map(
+                        (child) => `
+                    <tr>
+                        <td>${escapeHtml(child.imageEmoji || "🧒")} ${escapeHtml(child.name || "Unnamed")}</td>
+                        <td>${escapeHtml(child.age ?? "—")}</td>
+                        <td>${escapeHtml(child.city || "—")}</td>
+                        <td>${escapeHtml(child.status || "—")}</td>
+                        <td style="white-space:nowrap;">
+                            <button type="button" class="btn-add" style="padding:7px 10px;margin-right:6px;" onclick="openEditChildModal(${Number(child.id)})">Edit</button>
+                            <button type="button" style="padding:7px 10px;border:1px solid #b42318;border-radius:8px;background:#fff;color:#b42318;cursor:pointer;" onclick="deleteChild(${Number(child.id)})">Delete</button>
+                        </td>
+                    </tr>`,
+                    )
+                    .join("");
+            }
+
+            function openAdoptionsDrawer() {
+                document.getElementById("adoptionsDrawerBackdrop").style.display = "block";
+                document.getElementById("adoptionsDrawer").style.transform = "translateX(0)";
+                document.body.style.overflow = "hidden";
+                loadAdoptions();
+            }
+
+            function closeAdoptionsDrawer() {
+                document.getElementById("adoptionsDrawer").style.transform = "translateX(105%)";
+                document.getElementById("adoptionsDrawerBackdrop").style.display = "none";
+                document.body.style.overflow = "";
+            }
+
+            function openChildrenDrawer() {
+                const drawer = document.getElementById("childrenDrawer");
+                document.getElementById("childrenDrawerBackdrop").style.display = "block";
+                drawer.style.transform = "translateX(0)";
+                document.body.style.overflow = "hidden";
+                loadChildrenManagement();
+            }
+
+            function closeChildrenDrawer() {
+                document.getElementById("childrenDrawer").style.transform = "translateX(105%)";
+                document.getElementById("childrenDrawerBackdrop").style.display = "none";
+                document.body.style.overflow = "";
+            }
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    closeChildrenDrawer();
+                    closeAdoptionsDrawer();
+                    closeUtilityDrawer();
+                }
+            });
+
+            let currentUtilityView = "";
+            function openUtilityDrawer(view) {
+                currentUtilityView = view;
+                const titles = {
+                    users: ["Users", "Registered family and donor accounts"],
+                    donations: ["Donations", "Donation records and totals received"],
+                    reports: ["Reports", "Live summary based on your current database"],
+                    settings: ["Settings", "Admin session and dashboard preferences"],
+                };
+                document.getElementById("utilityTitle").textContent = titles[view][0];
+                document.getElementById("utilitySubtitle").textContent = titles[view][1];
+                document.getElementById("utilityDrawerBackdrop").style.display = "block";
+                document.getElementById("utilityDrawer").style.transform = "translateX(0)";
+                document.body.style.overflow = "hidden";
+                refreshUtilityDrawer();
+            }
+            function openUsersDrawer() {
+                openUtilityDrawer("users");
+            }
+            function openDonationsDrawer() {
+                openUtilityDrawer("donations");
+            }
+            function openReportsDrawer() {
+                openUtilityDrawer("reports");
+            }
+            function openSettingsDrawer() {
+                openUtilityDrawer("settings");
+            }
+            function closeUtilityDrawer() {
+                const drawer = document.getElementById("utilityDrawer");
+                if (drawer) drawer.style.transform = "translateX(105%)";
+                const back = document.getElementById("utilityDrawerBackdrop");
+                if (back) back.style.display = "none";
+                document.body.style.overflow = "";
+            }
+            async function refreshUtilityDrawer() {
+                const content = document.getElementById("utilityContent");
+                if (currentUtilityView === "users") {
+                    content.innerHTML = "<p>Loading users...</p>";
+                    try {
+                        const response = await fetch(`${API_URL}/api/users`, {headers: {Authorization: `Bearer ${authToken}`}});
+                        if (!response.ok) throw new Error(`Users API returned ${response.status}. Your backend may not expose GET /api/users yet.`);
+                        const payload = await response.json();
+                        const users = Array.isArray(payload) ? payload : payload.content || payload.users || [];
+                        if (!users.length) {
+                            content.innerHTML = "<p>No users found.</p>";
+                            return;
+                        }
+                        content.innerHTML = `<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;min-width:560px"><thead><tr><th style="text-align:left;padding:12px">Name</th><th style="text-align:left;padding:12px">Email</th><th style="text-align:left;padding:12px">Phone</th><th style="text-align:left;padding:12px">City</th><th style="text-align:left;padding:12px">Role</th></tr></thead><tbody>${users.map((u) => `<tr><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(((u.firstName || "") + " " + (u.lastName || "")).trim() || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(u.email || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(u.phone || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(u.city || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(u.role || "—")}</td></tr>`).join("")}</tbody></table></div>`;
+                    } catch (e) {
+                        content.innerHTML = `<p style="color:#b42318">${escapeHtml(e.message)}</p><p style="color:#68756d">No backend data was changed. Users display requires an admin-authorized GET /api/users endpoint.</p>`;
+                    }
+                } else if (currentUtilityView === "donations") {
+                    content.innerHTML = "<p>Loading donations...</p>";
+                    try {
+                        const response = await fetch(`${API_URL}/api/donations`, {headers: {Authorization: `Bearer ${authToken}`}});
+                        if (!response.ok) throw new Error(`Donations API returned ${response.status}.`);
+                        const donations = await response.json();
+                        const total = donations.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+                        const money = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
+                        if (!donations.length) {
+                            content.innerHTML = `<h3 style="color:#244b3a">Total donations: ${money(total)}</h3><p>No donations have been recorded yet.</p>`;
+                            return;
+                        }
+                        content.innerHTML = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px"><div style="border:1px solid #e7ece8;border-radius:12px;padding:18px;min-width:180px"><div style="color:#718077;font-size:13px">Total received</div><strong style="display:block;font-size:28px;color:#244b3a;margin-top:6px">${money(total)}</strong></div><div style="border:1px solid #e7ece8;border-radius:12px;padding:18px;min-width:180px"><div style="color:#718077;font-size:13px">Number of donations</div><strong style="display:block;font-size:28px;color:#244b3a;margin-top:6px">${donations.length}</strong></div></div><div style="overflow:auto"><table style="width:100%;border-collapse:collapse;min-width:650px"><thead><tr><th style="text-align:left;padding:12px">Donor</th><th style="text-align:left;padding:12px">Email</th><th style="text-align:left;padding:12px">Amount</th><th style="text-align:left;padding:12px">Category</th><th style="text-align:left;padding:12px">Frequency</th><th style="text-align:left;padding:12px">Date</th></tr></thead><tbody>${donations
+                            .slice()
+                            .sort((a, b) => new Date(b.donatedAt || 0) - new Date(a.donatedAt || 0))
+                            .map(
+                                (d) =>
+                                    `<tr><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(d.donorName || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(d.donorEmail || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${money(d.amount)}</td><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(d.category || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${escapeHtml(d.frequency || "—")}</td><td style="padding:12px;border-top:1px solid #eee">${d.donatedAt ? new Date(d.donatedAt).toLocaleDateString() : "—"}</td></tr>`,
+                            )
+                            .join("")}</tbody></table></div>`;
+                    } catch (e) {
+                        content.innerHTML = `<p style="color:#b42318">${escapeHtml(e.message)}</p>`;
+                    }
+                } else if (currentUtilityView === "reports") {
+                    content.innerHTML = "<p>Generating report...</p>";
+                    try {
+                        const headers = {Authorization: `Bearer ${authToken}`};
+                        const [cr, ar, dr] = await Promise.all([
+                            fetch(`${API_URL}/api/children`, {headers}),
+                            fetch(`${API_URL}/api/adoptions`, {headers}),
+                            fetch(`${API_URL}/api/donations`, {headers}),
+                        ]);
+                        if (!cr.ok || !ar.ok || !dr.ok)
+                            throw new Error("Could not load one or more report sources. Check your admin token and backend.");
+                        const [children, adoptions, donations] = await Promise.all([cr.json(), ar.json(), dr.json()]);
+                        const total = donations.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+                        const countStatus = (items, status) => items.filter((x) => (x.status || "").toUpperCase() === status).length;
+                        const metric = (label, value) =>
+                            `<div style="border:1px solid #e7ece8;border-radius:12px;padding:18px"><div style="color:#718077;font-size:13px">${label}</div><div style="font-size:28px;font-weight:700;color:#244b3a;margin-top:8px">${value}</div></div>`;
+                        content.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px">${metric("Total children", children.length)}${metric("Available children", countStatus(children, "AVAILABLE"))}${metric("Adoption requests", adoptions.length)}${metric("Pending requests", countStatus(adoptions, "PENDING"))}${metric("Approved adoptions", countStatus(adoptions, "APPROVED"))}${metric("Rejected requests", countStatus(adoptions, "REJECTED"))}${metric("Total donations", `₹${total.toLocaleString("en-IN")}`)}</div><p style="margin-top:20px;color:#718077;font-size:13px">Generated from live API data at ${new Date().toLocaleString()}.</p><button class="btn-add" type="button" onclick="window.print()">Print / Save report as PDF</button>`;
+                    } catch (e) {
+                        content.innerHTML = `<p style="color:#b42318">${escapeHtml(e.message)}</p>`;
+                    }
+                } else if (currentUtilityView === "settings") {
+                    const saved = localStorage.getItem("hopehavenAdminCompact") === "true";
+                    content.innerHTML = `<div style="max-width:560px"><h3 style="color:#244b3a">Dashboard preferences</h3><label style="display:flex;align-items:center;gap:10px;padding:14px 0"><input id="compactPreference" type="checkbox" ${saved ? "checked" : ""}> Use compact tables in management panels</label><button type="button" class="btn-add" onclick="saveAdminPreferences()">Save preferences</button><hr style="border:0;border-top:1px solid #eee;margin:24px 0"><h3 style="color:#244b3a">Admin session</h3><p style="color:#718077">Log out of this admin session on this browser.</p><button type="button" style="padding:10px 14px;border:1px solid #b42318;border-radius:8px;background:#fff;color:#b42318;cursor:pointer" onclick="adminLogout()">Log out</button></div>`;
+                }
+            }
+            function saveAdminPreferences() {
+                localStorage.setItem("hopehavenAdminCompact", document.getElementById("compactPreference").checked ? "true" : "false");
+                alert("Preferences saved on this browser.");
+            }
+            function adminLogout() {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "login.html";
+            }
+
+            async function loadChildrenManagement() {
+                const tbody = document.getElementById("childrenManagementBody");
+                if (!tbody) return;
+                tbody.innerHTML = '<tr><td colspan="5">Loading children...</td></tr>';
+                try {
+                    const response = await fetch(`${API_URL}/api/children`, {
+                        headers: {Authorization: `Bearer ${authToken}`},
+                    });
+                    if (!response.ok) throw new Error(`Unable to load children (${response.status}).`);
+                    dashboardChildren = await response.json();
+                    if (!dashboardChildren.length) {
+                        tbody.innerHTML = '<tr><td colspan="5">No children found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = dashboardChildren
+                        .map(
+                            (child) => `
+                        <tr>
+                            <td>${escapeHtml(child.imageEmoji || "🧒")} ${escapeHtml(child.name || "Unnamed")}</td>
+                            <td>${escapeHtml(child.age ?? "—")}</td>
+                            <td>${escapeHtml(child.city || "—")}</td>
+                            <td>${escapeHtml(child.status || "—")}</td>
+                            <td style="white-space:nowrap;">
+                                <button type="button" class="btn-add" style="padding:7px 10px;margin-right:6px;" onclick="openEditChildModal(${Number(child.id)})">Edit</button>
+                                <button type="button" style="padding:7px 10px;border:1px solid #b42318;border-radius:8px;background:#fff;color:#b42318;cursor:pointer;" onclick="deleteChild(${Number(child.id)})">Delete</button>
+                            </td>
+                        </tr>`,
+                        )
+                        .join("");
+                } catch (error) {
+                    tbody.innerHTML = `<tr><td colspan="5">${escapeHtml(error.message || "Unable to load children.")}</td></tr>`;
+                }
+            }
+
+            async function deleteChild(id) {
+                const child = dashboardChildren.find((item) => Number(item.id) === Number(id));
+                if (!child) return;
+                const confirmed = confirm(
+                    `Delete ${child.name || "this child"}? This cannot be undone. If adoption requests are linked, the server may prevent deletion.`,
+                );
+                if (!confirmed) return;
+                try {
+                    const response = await fetch(`${API_URL}/api/children/${id}`, {
+                        method: "DELETE",
+                        headers: {Authorization: `Bearer ${authToken}`},
+                    });
+                    if (!response.ok) {
+                        const detail = await response.text();
+                        throw new Error(detail || `Delete failed (${response.status}). The child may have linked adoption requests.`);
+                    }
+                    await loadDashboardStats();
+                    await loadChildrenManagement();
+                    alert("Child deleted successfully.");
+                } catch (error) {
+                    alert(error.message || "Could not delete child.");
+                }
+            }
+
+            async function loadDashboardStats() {
+                const headers = {
+                    Authorization: `Bearer ${authToken}`,
+                };
+
+                try {
+                    const [childrenRes, adoptionsRes, donationsRes] = await Promise.all([
+                        fetch(`${API_URL}/api/children`, {headers}),
+
+                        fetch(`${API_URL}/api/adoptions`, {headers}),
+
+                        fetch(`${API_URL}/api/donations`, {headers}),
+                    ]);
+
+                    if (!childrenRes.ok || !adoptionsRes.ok || !donationsRes.ok) {
+                        throw new Error("Failed to load dashboard statistics.");
+                    }
+
+                    const [children, adoptions, donations] = await Promise.all([childrenRes.json(), adoptionsRes.json(), donationsRes.json()]);
+                    dashboardChildren = children;
+                    renderChildrenManagementFromData(children);
+
+                    const pending = adoptions.filter((a) => String(a.status).toUpperCase() === "PENDING").length;
+
+                    const adopted = adoptions.filter((a) => String(a.status).toUpperCase() === "APPROVED").length;
+
+                    const inCare = children.filter((c) => String(c.status).toUpperCase() !== "ADOPTED").length;
+
+                    const totalDonations = donations.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+                    const values = {
+                        "Children in Care": inCare,
+
+                        "Pending Requests": pending,
+
+                        "Total Adoptions": adopted,
+
+                        "Total Donations": totalDonations.toLocaleString("en-IN", {
+                            style: "currency",
+
+                            currency: "INR",
+
+                            maximumFractionDigits: 0,
+                        }),
+                    };
+
+                    document.querySelectorAll(".kpi-card").forEach((card) => {
+                        const label = card.querySelector(".kpi-label")?.textContent.trim();
+
+                        const number = card.querySelector(".kpi-num");
+
+                        if (number && Object.hasOwn(values, label)) {
+                            number.textContent = values[label];
+                        }
+                    });
+                } catch (error) {
+                    console.error("Dashboard statistics error:", error);
+                }
+            }
+
+            async function loadDonationsByCategory() {
+                const container = document.getElementById("donationsCategoryChart");
+                if (!container) return;
+                try {
+                    const response = await fetch(`${API_URL}/api/donations/category`, {
+                        headers: {Authorization: `Bearer ${authToken}`},
+                    });
+                    if (!response.ok) throw new Error(`Failed to load categories (${response.status})`);
+                    const categories = await response.json();
+                    const entries = Object.entries(categories || {});
+                    if (!entries.length) {
+                        container.innerHTML = "<p>No donations yet.</p>";
+                        return;
+                    }
+                    const maxAmount = Math.max(1, ...entries.map(([, amount]) => Number(amount) || 0));
+                    const colors = ["var(--forest)", "var(--rust)", "var(--gold)", "#8a7d6e"];
+                    container.innerHTML = entries
+                        .map(([category, amount], index) => {
+                            const numericAmount = Number(amount) || 0;
+                            const width = Math.max(0, Math.min(100, (numericAmount / maxAmount) * 100));
+                            const formattedAmount = numericAmount.toLocaleString("en-IN", {
+                                style: "currency",
+                                currency: "INR",
+                                maximumFractionDigits: 0,
+                            });
+                            return `<div class="chart-row">
+                            <span class="chart-label">${escapeHtml(category)}</span>
+                            <div class="bar-bg"><div class="bar-fill" style="width:${width}%; background:${colors[index % colors.length]}"></div></div>
+                            <span class="bar-val" style="width:auto; min-width:72px">${formattedAmount}</span>
+                        </div>`;
+                        })
+                        .join("");
+                } catch (error) {
+                    console.error("Donation categories error:", error);
+                    container.innerHTML = "<p>Unable to load donation categories.</p>";
+                }
+            }
+
+            async function loadRecentDonations() {
+                const container = document.getElementById("recentDonationsList");
+                if (!container) return;
+                try {
+                    const response = await fetch(`${API_URL}/api/donations/recent`, {
+                        headers: {Authorization: `Bearer ${authToken}`},
+                    });
+                    if (!response.ok) throw new Error(`Failed to load recent donations (${response.status})`);
+                    const donations = await response.json();
+                    if (!donations.length) {
+                        container.innerHTML = "<p>No donations yet.</p>";
+                        return;
+                    }
+                    const icons = ["🌟", "💛", "🌺", "🤍", "✨"];
+                    container.innerHTML = donations
+                        .map((donation, index) => {
+                            const donorName = donation.donorName || "Anonymous";
+                            const category = donation.category || "General Fund";
+                            const amount = Number(donation.amount || 0).toLocaleString("en-IN", {
+                                style: "currency",
+                                currency: "INR",
+                                maximumFractionDigits: 0,
+                            });
+                            const donatedAt = donation.donatedAt ? new Date(donation.donatedAt) : null;
+                            let when = "Date unavailable";
+                            if (donatedAt && !Number.isNaN(donatedAt.getTime())) {
+                                const hours = Math.floor((Date.now() - donatedAt.getTime()) / 3600000);
+                                if (hours < 1) when = "Just now";
+                                else if (hours < 24) when = `${hours}h ago`;
+                                else if (hours < 48) when = "Yesterday";
+                                else when = donatedAt.toLocaleDateString();
+                            }
+                            return `<div class="donation-row">
+                            <div class="donor-pill">
+                                <div class="donor-av">${icons[index % icons.length]}</div>
+                                <div>
+                                    <div class="donor-n">${escapeHtml(donorName)}</div>
+                                    <div class="donor-t">${escapeHtml(category)} · ${escapeHtml(when)}</div>
+                                </div>
+                            </div>
+                            <div class="donation-amt">${amount}</div>
+                        </div>`;
+                        })
+                        .join("");
+                } catch (error) {
+                    console.error("Recent donations error:", error);
+                    container.innerHTML = "<p>Unable to load recent donations.</p>";
+                }
+            }
+
+            function escapeHtml(value) {
+                return String(value).replace(
+                    /[&<>"']/g,
+
+                    (char) =>
+                        ({
+                            "&": "&amp;",
+
+                            "<": "&lt;",
+
+                            ">": "&gt;",
+
+                            '"': "&quot;",
+
+                            "'": "&#39;",
+                        })[char],
+                );
+            }
+
+            loadAdoptions();
+            loadDashboardStats();
+            loadDonationsByCategory();
+            loadRecentDonations();
+        </script>
+    </body>
 </html>

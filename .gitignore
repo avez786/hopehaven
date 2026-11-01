@@ -58,4 +58,15 @@ gradle-app.setting
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
->>>>>>> cccc3fc1862137571baecff832c1bf7f7e827908
+>>>>>>> cccc3fc1862137571baecff832c1bf7f7e827908# Build files
+.gradle/
+build/
+
+# Secrets and local credentials
+.env
+.env.*
+password/
+
+# Local configuration containing credentials
+application-local.properties
+
