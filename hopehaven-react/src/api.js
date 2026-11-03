@@ -1,5 +1,5 @@
 
-const API_URL = "https://hopehaven-1.onrender.com";
+const API_URL = "https://hopehaven-2.onrender.com";
 
 export async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('token');
